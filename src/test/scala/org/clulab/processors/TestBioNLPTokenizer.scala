@@ -81,5 +81,22 @@ class TestBioNLPTokenizer extends FlatSpec with Matchers {
     s.words(6) should be ("Ku80")
   }
 
+  it should "tokenize complex names when participants were mentioned as standalone proteins" in {
+    val text = "ASPP2, p53, Mek, and Ras are proteins. We found the p53–ASPP2-Mek-Ras complex."
+    val expectedWords = Array("We", "found", "the", "p53", ",", "ASPP2", ",", "Mek", ",", "and", "Ras", "complex", ".")
+    val doc = proc.annotate(text)
+    val s = doc.sentences(1)
+    s.words should be (expectedWords)
+  }
+
+  it should "not tokenize complex names when participants were not mentioned as standalone proteins" in {
+    val text = "We found the p53–ASPP2-Mek-Ras complex."
+    val expectedWords = Array("We", "found", "the", "p53-ASPP2-Mek-Ras", "complex", ".")
+    val doc = proc.annotate(text)
+    val s = doc.sentences(0)
+    s.words should be (expectedWords)
+  }
+
+
   // TODO: add tests for the tokenization of mutations - DANE
 }
